@@ -1,18 +1,19 @@
 library(data.table)
 library(dplyr)
 
-
-#### load train data
+#################### Step 1 ####################
+## load train data
 trainDataFile <- "./UCI HAR Dataset/train/X_train.txt"
 traindata <- fread(trainDataFile, sep = " ")
 
-#### load test data
+## load test data
 testDataFile <- "./UCI HAR Dataset/test/X_test.txt"
 testdata <- fread(testDataFile, sep = " ")
 
-#### combine data
+## combine data
 combineddata <- rbind(traindata, testdata)
 
+#################### Step 2 ####################
 #### load feature names
 featuresFilePath <- "./UCI HAR Dataset/features.txt"
 features <- fread(featuresFilePath, sep = " ", col.names = c("index", "featurename"))
@@ -21,6 +22,7 @@ features <- fread(featuresFilePath, sep = " ", col.names = c("index", "featurena
 colnames(combineddata) <- features$featurename
 selectattributes <- select(combineddata, matches("mean\\(\\)|std\\(\\)"))
 
+#################### Step 3 ####################
 #### load train labels
 trainLabelFile <- "./UCI HAR Dataset/train/y_train.txt"
 trainlabels <- read.csv(file = trainLabelFile, header = FALSE, col.names = c("label"))
@@ -39,6 +41,8 @@ desclabels <- merge(combinedlabels, labels, by.x = "label", by.y = "index")
 
 selectattributes <- cbind(selectattributes, desclabels)
 
+
+#################### Step 5 ####################
 #### load train subject data
 trainSubjectPath  <- "./UCI HAR Dataset/train/subject_train.txt"
 trainsubjects <- fread(trainSubjectPath, sep = " ", col.names = c("subject"))
@@ -54,6 +58,7 @@ meanattributes <- selectattributes %>% cbind(combinedsubjects) %>%
 
 write.table(meanattributes, file = "har_dataset.txt", row.names = FALSE, quote = FALSE)
 
+#################### End ####################
 ## select_features <- names(meanattributes)
 ## selectfeatures_df <- data.frame(index = 1:length(select_features), features = select_features)
 ## write.table(selectfeatures_df, file = "features.txt", row.names = FALSE)
